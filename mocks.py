@@ -1,7 +1,8 @@
-from base_classes import ImagesProvider
+from base_classes import ImagesProvider, OCR
 
 import os
 from PIL import Image
+import pandas as pd
 
 class ImagesExtractorMock(ImagesProvider):
     def get_images(self, url):
@@ -22,3 +23,19 @@ class ImagesExtractorMock(ImagesProvider):
             format_data.append(obj)
         
         return input_data, format_data
+
+class ImgToDFMock(OCR):
+    def convert(self, img, what="Data"):
+        if what == "Data":
+            return (
+                pd.DataFrame({
+                    "lead_manager_code" : ["LM1", "LM2"],
+                    "company_code" : ["1", "2"]
+                })
+            )
+        return (
+            pd.DataFrame({
+                "Column" : ["lead_manager_code", "company_code"],
+                "Type" : ["String", "Integer"]
+            })
+        )

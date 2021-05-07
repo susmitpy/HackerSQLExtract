@@ -60,6 +60,8 @@ class ImagesExtractor(ImagesProvider):
             img = Image.open(io.BytesIO(data)) 
             for i in range(table_name_idx,len(table_names)):
                 table_name = table_names[i]
+                if table_name[-1] == ":":
+                    table_name = table_name[:-1]
                 table_name_idx += 1
                 if table_name.istitle():
                     break
