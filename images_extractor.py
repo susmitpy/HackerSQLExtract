@@ -53,24 +53,27 @@ class ImagesExtractor(ImagesProvider):
         table_names = [i.text for i in sample_input.find_elements_by_tag_name("em")]
         images = [i.get_attribute("src") for i in sample_input.find_elements_by_tag_name("img")]
         sample_input_data = [] # [ {"name":"table name", "img" : PIL.Image} ]
-        
+    
         table_name_idx = 0
         for image in images:
             data = requests.get(image).content
-            img = Image.open(io.BytesIO(data)) 
-            for i in range(table_name_idx,len(table_names)):
-                table_name = table_names[i]
-                if table_name[-1] == ":":
-                    table_name = table_name[:-1]
-                table_name_idx += 1
-                if table_name.istitle():
-                    break
-
-            obj = {"name":table_name, "img":img}
+            obj, table_name_idx = self.process_img_data(data, table_name_idx,table_names)
             sample_input_data.append(obj)
-            print(table_name)
-            print(type(img))
+
         return sample_input_data
+    
+    def process_img_data(self,img,table_name_idx,table_names):
+        img = Image.open(io.BytesIO(img)) 
+        for i in range(table_name_idx,len(table_names)):
+            table_name = table_names[i]
+            if table_name[-1] == ":":
+                table_name = table_name[:-1]
+            table_name_idx += 1
+            if table_name.istitle():
+                break
+
+        obj = {"name":table_name, "img":img}
+        return obj, table_name_idx
 
 if __name__ == '__main__':
     IE = ImagesExtractor()
